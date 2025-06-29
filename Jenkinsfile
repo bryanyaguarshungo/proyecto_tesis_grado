@@ -1,14 +1,14 @@
 /* ─────────────────────────  CI/CD Moodle (estable)  ───────────────────────── */
 
 pipeline {
-  agent any          // Jenkins propio, CLI docker disponible
+  agent any
 
   environment {
     REGISTRY        = 'docker.io'
     IMAGE_REPO      = 'bryanyaguarshungo/moodle'
-    TAG             = "${env.GIT_COMMIT.take(7)}"     // cada build único
-    DOCKER_CREDS_ID = 'docker-hub2'                  // ← credencial Docker Hub
-    KUBECONFIG_ID   = 'kubeconfig'                   // ← credencial K8s
+    TAG             = "${env.GIT_COMMIT.take(7)}"
+    DOCKER_CREDS_ID = 'docker-hub2'
+    KUBECONFIG_ID   = 'kubeconfig'
     K8S_NAMESPACE   = 'default'
   }
 
@@ -24,7 +24,7 @@ pipeline {
                                           usernameVariable: 'USER',
                                           passwordVariable: 'PASS')]) {
           sh """
-            echo $PASS | docker login -u $USER --password-stdin $REGISTRY
+            echo \$PASS | docker login -u \$USER --password-stdin $REGISTRY
             docker build -f app/Dockerfile -t $REGISTRY/$IMAGE_REPO:$TAG app
             docker push  $REGISTRY/$IMAGE_REPO:$TAG
           """
@@ -37,12 +37,23 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
           script {
-            // Imagen con kubectl + kustomize + curl ya instalados
-            docker.image('bitnami/kubectl-kustomize:1.30.0').inside(
+            /*  👇  usa la imagen original de Bitnami (SÍ existe)  */
+            docker.image('bitnami/kubectl:1.30').inside(
                    '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock') {
 
-              sh """
+              /* instala curl y kustomize dentro del contenedor */
+              sh '''
                 set -e
+                apt-get update -qq
+                apt-get install -y -qq curl
+
+                curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/v5.4.1/kustomize_v5.4.1_linux_amd64.tar.gz |
+                  tar -xz
+                mv kustomize /usr/local/bin/
+              '''
+
+              /* renderiza y aplica */
+              sh """
                 cd "$WORKSPACE/infra"
                 kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
                 kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
@@ -56,29 +67,16 @@ pipeline {
     /* 4. Smoke Test */
     stage('Smoke Test') {
       steps {
-              sh '''
-              set -e
-
-              # ── dependencias mínimas ─────────────────────────────────────────
-              apt-get update -qq
-              apt-get install -y -qq curl
-
-              # ── kustomize v5 (descarga binario, 2 MB) ────────────────────────
-              curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/v5.4.1/kustomize_v5.4.1_linux_amd64.tar.gz |
-                tar -xz
-              mv kustomize /usr/local/bin/
-
-              # ── renderiza manifiestos y aplica ──────────────────────────────
-              cd "$WORKSPACE/infra"
-              kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
-              kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
-              '''
-
+        sh '''
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://198.154.99.201:30080/login/index.php)
+          [ "$code" = "200" ] && echo "✅ Smoke OK" || {
+            echo "❌ Smoke FAIL ($code)"; exit 1; }
+        '''
       }
     }
   }
 
-  /* 5. Rollback automático si algo falla después del deploy */
+  /* 5. Rollback si el deploy falla */
   post {
     failure {
       withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
