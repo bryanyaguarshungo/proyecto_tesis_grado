@@ -1,8 +1,8 @@
 pipeline {
   agent {
     docker {
-      image 'bitnami/kubectl:1.30'        // trae kubectl v1.30
-      args  '-v /var/run/docker.sock:/var/run/docker.sock'  // para que pueda construir imágenes
+      image 'bitnami/kubectl:1.30'
+      args  '-v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
 
@@ -10,12 +10,13 @@ pipeline {
     REGISTRY        = 'docker.io'
     IMAGE_REPO      = 'bryanyaguarshungo/moodle'
     TAG             = "${env.GIT_COMMIT.take(7)}"
-    DOCKER_CREDS_ID = 'github-token'
+    DOCKER_CREDS_ID = 'dockerhub-creds'
     KUBECONFIG_ID   = 'kubeconfig'
     K8S_NAMESPACE   = 'default'
   }
 
   stages {
+
     stage('Checkout') {
       steps { checkout scm }
     }
@@ -33,18 +34,17 @@ pipeline {
         }
       }
     }
-    stage('Install kustomize') {
-  steps {
-    sh '''
-      if ! command -v kustomize >/dev/null; then
-        echo "Instalando kustomize…"
-        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-        mv kustomize /usr/local/bin/
-      fi
-    '''
-  }
-}
 
+    stage('Install kustomize') {
+      steps {
+        sh '''
+          if ! command -v kustomize >/dev/null; then
+            curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+            mv kustomize /usr/local/bin/
+          fi
+        '''
+      }
+    }
 
     stage('Render Manifests') {
       steps {
@@ -66,7 +66,7 @@ pipeline {
     stage('Smoke Test') {
       steps { sh 'app/tests/smoke.sh' }
     }
-  }
+  }   // ←–––––– cierre del bloque stages
 
   post {
     failure {
@@ -74,3 +74,4 @@ pipeline {
       sh 'kubectl rollout undo deployment/moodle -n $K8S_NAMESPACE || true'
     }
   }
+}     // ←–––––– cierre final del bloque pipeline
