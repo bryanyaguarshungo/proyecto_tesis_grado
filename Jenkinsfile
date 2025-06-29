@@ -24,7 +24,7 @@ pipeline {
                                           usernameVariable: 'USER',
                                           passwordVariable: 'PASS')]) {
           sh """
-            echo \$PASS | docker login -u \$USER --password-stdin $REGISTRY
+            echo $PASS | docker login -u $USER --password-stdin $REGISTRY
             docker build -f app/Dockerfile -t $REGISTRY/$IMAGE_REPO:$TAG app
             docker push  $REGISTRY/$IMAGE_REPO:$TAG
           """
@@ -37,22 +37,15 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
           script {
-            docker.image('bitnami/kubectl:1.30').inside(
+            // Imagen con kubectl + kustomize + curl ya instalados
+            docker.image('bitnami/kubectl-kustomize:1.30.0').inside(
                    '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock') {
 
-              /* instala kustomize si falta (≈2 s) */
-              sh '''
-                command -v kustomize >/dev/null || {
-                  curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash
-                  mv kustomize /usr/local/bin/; }
-              '''
-
-              /* actualiza la imagen y aplica */
               sh """
+                set -e
                 cd "$WORKSPACE/infra"
                 kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
-                kustomize build . > rendered.yaml
-                kubectl --kubeconfig="$KCFG" apply -f rendered.yaml -n $K8S_NAMESPACE
+                kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
               """
             }
           }
