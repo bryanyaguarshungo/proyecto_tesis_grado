@@ -28,18 +28,15 @@ pipeline {
 
     stage('Build & Push Image') {
       steps {
-        withCredentials([usernamePassword(
-            credentialsId: DOCKER_CREDS_ID,
-            usernameVariable: 'USER',
-            passwordVariable: 'PASS')]) {
+              withCredentials([usernamePassword(credentialsId: 'docker-hub2', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                  sh """
+                  docker login -u $USER -p $PASS
+                  docker build -t bryanyaguarshungo/moodle:latest .
+                  docker push bryanyaguarshungo/moodle:latest
+                  """
+              }
 
-          sh """
-            docker login -u $USER -p $PASS $REGISTRY
-            docker build -t $REGISTRY/$IMAGE_REPO:$TAG app
-            docker push   $REGISTRY/$IMAGE_REPO:$TAG
-          """
-        }
-      }
+              }
     }
 
     /* Render + Deploy dentro de contenedor que trae kubectl  */
