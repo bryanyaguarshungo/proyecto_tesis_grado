@@ -1,5 +1,10 @@
 pipeline {
-  agent any
+  agent {
+    docker {
+      image 'bitnami/kubectl:1.30'        // trae kubectl v1.30
+      args  '-v /var/run/docker.sock:/var/run/docker.sock'  // para que pueda construir imágenes
+    }
+  }
 
   environment {
     REGISTRY        = 'docker.io'
@@ -28,6 +33,18 @@ pipeline {
         }
       }
     }
+    stage('Install kustomize') {
+  steps {
+    sh '''
+      if ! command -v kustomize >/dev/null; then
+        echo "Instalando kustomize…"
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+        mv kustomize /usr/local/bin/
+      fi
+    '''
+  }
+}
+
 
     stage('Render Manifests') {
       steps {
@@ -57,4 +74,3 @@ pipeline {
       sh 'kubectl rollout undo deployment/moodle -n $K8S_NAMESPACE || true'
     }
   }
-}
