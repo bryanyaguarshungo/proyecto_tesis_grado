@@ -1,4 +1,4 @@
-/* ─────────────────────────  CI/CD Moodle (estable)  ───────────────────────── */
+/* ────────────────  CI/CD Moodle (estable)  ──────────────── */
 
 pipeline {
   agent any
@@ -7,8 +7,8 @@ pipeline {
     REGISTRY        = 'docker.io'
     IMAGE_REPO      = 'bryanyaguarshungo/moodle'
     TAG             = "${env.GIT_COMMIT.take(7)}"
-    DOCKER_CREDS_ID = 'docker-hub2'      // credencial Docker Hub
-    KUBECONFIG_ID   = 'kubeconfig'       // kubeconfig de tu clúster
+    DOCKER_CREDS_ID = 'docker-hub2'
+    KUBECONFIG_ID   = 'kubeconfig'
     K8S_NAMESPACE   = 'default'
   }
 
@@ -41,25 +41,26 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
           script {
-
-            /*  Imagen Debian que sí trae curl y apt */
             docker.image('bitnami/kubectl:1.30.0-debian-12-r0').inside(
                    '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock') {
 
-              /* Instala Kustomize (curl ya viene) */
               sh '''
                 set -e
+                # ── habilita apt y curl ───────────────────────────
+                mkdir -p /var/lib/apt/lists/partial
+                apt-get update -qq
+                apt-get install -y -qq curl
+
+                # ── instala kustomize v5.4.1 ─────────────────────
                 curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/v5.4.1/kustomize_v5.4.1_linux_amd64.tar.gz |
                   tar -xz
                 mv kustomize /usr/local/bin/
-              '''
 
-              /* Renderiza manifests y aplica */
-              sh """
+                # ── renderiza y aplica ───────────────────────────
                 cd "$WORKSPACE/infra"
                 kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
                 kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
-              """
+              '''
             }
           }
         }
