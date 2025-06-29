@@ -1,4 +1,4 @@
-/* ────────────────  CI/CD Moodle (estable)  ──────────────── */
+/* ──────────────  CI/CD Moodle – versión estable  ────────────── */
 
 pipeline {
   agent any
@@ -15,18 +15,14 @@ pipeline {
   stages {
 
     /* 1 ─ Checkout */
-    stage('Checkout') {
-      steps { checkout scm }
-    }
+    stage('Checkout') { steps { checkout scm } }
 
     /* 2 ─ Build & Push */
     stage('Build & Push Image') {
       steps {
-        withCredentials([usernamePassword(
-            credentialsId: DOCKER_CREDS_ID,
-            usernameVariable: 'USER',
-            passwordVariable: 'PASS')]) {
-
+        withCredentials([usernamePassword(credentialsId: DOCKER_CREDS_ID,
+                                          usernameVariable: 'USER',
+                                          passwordVariable: 'PASS')]) {
           sh """
             echo \$PASS | docker login -u \$USER --password-stdin $REGISTRY
             docker build -f app/Dockerfile -t $REGISTRY/$IMAGE_REPO:$TAG app
@@ -41,13 +37,15 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
           script {
+
+            /*  Ejecuta la imagen como root (-u 0:0)  */
             docker.image('bitnami/kubectl:1.30.0-debian-12-r0').inside(
-                   '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock') {
+                   '--user 0:0 --entrypoint=""') {
 
               sh '''
                 set -e
-                # ── habilita apt y curl ───────────────────────────
-                mkdir -p /var/lib/apt/lists/partial
+
+                # ── instala curl (ya tenemos apt como root) ───────
                 apt-get update -qq
                 apt-get install -y -qq curl
 
@@ -80,12 +78,12 @@ pipeline {
     }
   }
 
-  /* 5 ─ Rollback si el deploy falla */
+  /* 5 ─ Rollback automático si falla el deploy */
   post {
     failure {
       withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
         script {
-          docker.image('bitnami/kubectl:1.30.0-debian-12-r0').inside('--entrypoint=""') {
+          docker.image('bitnami/kubectl:1.30.0-debian-12-r0').inside('--user 0:0 --entrypoint=""') {
             sh 'kubectl --kubeconfig="$KCFG" rollout undo deployment/moodle -n $K8S_NAMESPACE || true'
           }
         }
