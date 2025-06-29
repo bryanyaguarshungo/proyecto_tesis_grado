@@ -1,0 +1,12 @@
+Usuario
+Espe_admin
+Contraseña
+Espe.2025_@dmin
+Confirma la contraseña
+•••••••••••••••
+Nombre completo
+Espe_admin
+Dirección de email
+bryanyaguarshungo@gmail.com
+------------------------------
+http://198.154.99.201:8090/jenkins

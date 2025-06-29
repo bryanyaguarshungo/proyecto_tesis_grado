@@ -1,0 +1,22 @@
+ 1. Listar los contextos disponibles (clústeres configurados):
+kubectl config get-contexts
+
+✅ 2. Verificar en qué contexto (clúster) estás actualmente:
+kubectl config current-context
+
+🔄 3. Cambiar entre clústeres (si tienes 2 contextos):
+kubectl config use-context nombre_del_contexto
+
+📊 4. Ver nodos en el clúster actual:
+kubectl get nodes
+
+📦 5. Ver pods en todos los espacios de nombres:
+kubectl get pods --all-namespaces
+
+📁 6. Ver deployments:
+kubectl get deployments --all-namespaces
+📌 7. Ver servicios (services):
+kubectl get svc --all-namespaces
+
+🌐 8. Ver ingress configurado (como ingress.yaml que tienes):
+kubectl get ingress --all-namespaces

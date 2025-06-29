@@ -1,0 +1,32 @@
+1 https://github.com/bryanyaguarshungo/proyecto_tesis_grado.git
+
+2. PS C:\Users\Deniss\Documents\TESIS\proyecto_tesis_grado> git branch
+* documentacion
+  infraestructura
+  main
+  microservicios
+  monolitico
+  pruebas
+PS C:\Users\Deniss\Documents\TESIS\proyecto_tesis_grado>
+
+
+3 http://198.154.99.201:8090/jenkins
+
+4 credencialesjenkis Usuario
+Espe_admin
+Contraseña
+Espe.2025_@dmin
+
+
+5 docker.io/bitnami/mariadb:latest
+docker.io/bitnami/moodle:latest
+
+
+6 default
+
+
+7 kubeconfig
+
+
+8 http://198.154.99.201:30080/
+
