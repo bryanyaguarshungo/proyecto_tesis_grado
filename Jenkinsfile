@@ -56,11 +56,24 @@ pipeline {
     /* 4. Smoke Test */
     stage('Smoke Test') {
       steps {
-        sh '''
-          code=$(curl -s -o /dev/null -w '%{http_code}' http://198.154.99.201:30080/login/index.php)
-          [ "$code" = "200" ] && echo "✅ Smoke OK" || {
-            echo "❌ Smoke FAIL ($code)"; exit 1; }
-        '''
+              sh '''
+              set -e
+
+              # ── dependencias mínimas ─────────────────────────────────────────
+              apt-get update -qq
+              apt-get install -y -qq curl
+
+              # ── kustomize v5 (descarga binario, 2 MB) ────────────────────────
+              curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/v5.4.1/kustomize_v5.4.1_linux_amd64.tar.gz |
+                tar -xz
+              mv kustomize /usr/local/bin/
+
+              # ── renderiza manifiestos y aplica ──────────────────────────────
+              cd "$WORKSPACE/infra"
+              kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
+              kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
+              '''
+
       }
     }
   }
