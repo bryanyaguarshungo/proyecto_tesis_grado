@@ -5,7 +5,7 @@ pipeline {
     REGISTRY        = 'docker.io'
     IMAGE_REPO      = 'bryanyaguarshungo/moodle'
     TAG             = "${env.GIT_COMMIT.take(7)}"
-    DOCKER_CREDS_ID = 'dockerhub-creds'
+    DOCKER_CREDS_ID = 'github-token'
     KUBECONFIG_ID   = 'kubeconfig'
     K8S_NAMESPACE   = 'default'
   }
