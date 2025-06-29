@@ -1,0 +1,10 @@
+@"
+#!/usr/bin/env bash
+set -euo pipefail
+URL="http://198.154.99.201:30080/login/index.php"
+code=\$(curl -s -o /dev/null -w '%{http_code}' "\$URL")
+[[ "\$code" == "200" ]] && echo "✅ Smoke OK" || { echo "❌ Smoke FAIL (\$code)"; exit 1; }
+"@ | Set-Content app\tests\smoke.sh -Encoding ascii
+git add infra\* app\tests\smoke.sh
+git commit -m "feat(ci): manifiestos K8s y smoke test"
+git push

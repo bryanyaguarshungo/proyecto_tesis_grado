@@ -1,0 +1,45 @@
+# DEPLOYMENT
+@"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: moodle }
+  template:
+    metadata:
+      labels: { app: moodle }
+    spec:
+      containers:
+      - name: moodle
+        image: IMAGE_PLACEHOLDER   # Jenkins lo reemplaza
+        ports:
+        - containerPort: 8080
+"@ | Set-Content infra\base\deployment.yaml -Encoding ascii
+
+# SERVICE
+@"
+apiVersion: v1
+kind: Service
+metadata:
+  name: moodle
+spec:
+  type: NodePort
+  selector: { app: moodle }
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30080
+"@ | Set-Content infra\base\service.yaml -Encoding ascii
+
+# KUSTOMIZATION en infra\
+@"
+resources:
+  - base/
+images:
+  - name: moodle
+    newName: docker.io/bryanyaguarshungo/moodle
+    newTag: latest
+"@ | Set-Content infra\kustomization.yaml -Encoding ascii
