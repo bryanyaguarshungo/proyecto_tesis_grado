@@ -1,4 +1,4 @@
-/* ────────────────  CI/CD Moodle (estable) ──────────────── */
+/* ──────────  CI/CD Moodle (estable) ────────── */
 
 pipeline {
   agent any
@@ -30,43 +30,30 @@ pipeline {
           sh """
             echo \$PASS | docker login -u \$USER --password-stdin $REGISTRY
             docker build -f app/Dockerfile -t $REGISTRY/$IMAGE_REPO:$TAG app
-            docker push  $REGISTRY/$IMAGE_REPO:$TAG
+            docker push $REGISTRY/$IMAGE_REPO:$TAG
           """
         }
       }
     }
 
-    /* 3 ─ Render & Deploy (FIXED) */
+    /* 3 ─ Render & Deploy */
     stage('Render & Deploy to K8s') {
       steps {
         withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
-          script {
-            // SOLUTION 1: Use pre-configured image with kustomize
-            docker.image('k8s-utils:v1').inside(
-                   '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock') {
-              sh '''
-                cd "$WORKSPACE/infra"
-                kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
-                kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
-              '''
-            }
-            
-            // ALTERNATIVE SOLUTION 2: Install without root
-            /*
-            docker.image('bitnami/kubectl:1.30.0-debian-12-r0').inside(
-                   '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock') {
-              sh '''
-                # Install kustomize to user directory
-                curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/v5.4.1/kustomize_v5.4.1_linux_amd64.tar.gz | 
-                  tar -xz -C $HOME
-                export PATH="$PATH:$HOME"
-                
-                cd "$WORKSPACE/infra"
-                kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
-                kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
-              '''
-            }
-            */
+
+          // Usamos kubectl oficial de Bitnami e instalamos kustomize en /usr/local/bin
+          docker.image('bitnami/kubectl:1.30.0-debian-12-r0')
+                .inside('--entrypoint=""') {
+
+            sh '''
+              set -e
+              curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/v5.4.1/kustomize_v5.4.1_linux_amd64.tar.gz \
+                | tar -xz -C /usr/local/bin
+
+              cd "$WORKSPACE/infra"
+              kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
+              kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
+            '''
           }
         }
       }
@@ -89,10 +76,9 @@ pipeline {
   post {
     failure {
       withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
-        script {
-          docker.image('bitnami/kubectl:1.30.0-debian-12-r0').inside('--entrypoint=""') {
-            sh 'kubectl --kubeconfig="$KCFG" rollout undo deployment/moodle -n $K8S_NAMESPACE || true'
-          }
+        docker.image('bitnami/kubectl:1.30.0-debian-12-r0')
+              .inside('--entrypoint=""') {
+          sh 'kubectl --kubeconfig="$KCFG" rollout undo deployment/moodle -n $K8S_NAMESPACE || true'
         }
       }
     }
