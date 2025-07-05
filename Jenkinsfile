@@ -1,4 +1,4 @@
-/* ──────────  CI/CD Moodle (estable) ────────── */
+/* ─────────  CI/CD Moodle (estable) ───────── */
 
 pipeline {
   agent any
@@ -40,20 +40,19 @@ pipeline {
     stage('Render & Deploy to K8s') {
       steps {
         withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
+          script {
+            // ***** Todo el bloque Groovy va dentro de script { } *****
+            docker.image('bitnami/kubectl:1.30.0-debian-12-r0').inside('--entrypoint=""') {
+              sh '''
+                set -e
+                curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/v5.4.1/kustomize_v5.4.1_linux_amd64.tar.gz \
+                  | tar -xz -C /usr/local/bin
 
-          // Usamos kubectl oficial de Bitnami e instalamos kustomize en /usr/local/bin
-          docker.image('bitnami/kubectl:1.30.0-debian-12-r0')
-                .inside('--entrypoint=""') {
-
-            sh '''
-              set -e
-              curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/v5.4.1/kustomize_v5.4.1_linux_amd64.tar.gz \
-                | tar -xz -C /usr/local/bin
-
-              cd "$WORKSPACE/infra"
-              kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
-              kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
-            '''
+                cd "$WORKSPACE/infra"
+                kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
+                kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
+              '''
+            }
           }
         }
       }
@@ -76,9 +75,10 @@ pipeline {
   post {
     failure {
       withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
-        docker.image('bitnami/kubectl:1.30.0-debian-12-r0')
-              .inside('--entrypoint=""') {
-          sh 'kubectl --kubeconfig="$KCFG" rollout undo deployment/moodle -n $K8S_NAMESPACE || true'
+        script {
+          docker.image('bitnami/kubectl:1.30.0-debian-12-r0').inside('--entrypoint=""') {
+            sh 'kubectl --kubeconfig="$KCFG" rollout undo deployment/moodle -n $K8S_NAMESPACE || true'
+          }
         }
       }
     }
