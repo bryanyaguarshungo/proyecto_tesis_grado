@@ -41,13 +41,9 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
           script {
-            // ***** Todo el bloque Groovy va dentro de script { } *****
             docker.image('line/kubectl-kustomize:1.30.3-5.4.3').inside('--entrypoint=""') {
               sh '''
                 set -e
-                curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/v5.4.1/kustomize_v5.4.1_linux_amd64.tar.gz \
-                  | tar -xz -C /usr/local/bin
-
                 cd "$WORKSPACE/infra"
                 kustomize edit set image moodle=$REGISTRY/$IMAGE_REPO:$TAG
                 kustomize build . | kubectl --kubeconfig="$KCFG" apply -n $K8S_NAMESPACE -f -
@@ -62,10 +58,11 @@ pipeline {
     stage('Smoke Test') {
       steps {
         sh '''
+          set -e
           code=$(curl -s -o /dev/null -w '%{http_code}' \
-                http://198.154.99.201:30080/login/index.php)
-          [ "$code" = "200" ] && echo "✅ Smoke OK" || {
-            echo "❌ Smoke FAIL ($code)"; exit 1; }
+                 http://198.154.99.201:30080/login/index.php)
+          [ "$code" = "200" ] && echo " Smoke OK" || {
+            echo " Smoke FAIL ($code)"; exit 1; }
         '''
       }
     }
@@ -76,7 +73,7 @@ pipeline {
     failure {
       withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KCFG')]) {
         script {
-          docker.image('bitnami/kubectl:1.30.0-debian-12-r0').inside('--entrypoint=""') {
+          docker.image('line/kubectl-kustomize:1.30.3-5.4.3').inside('--entrypoint=""') {
             sh 'kubectl --kubeconfig="$KCFG" rollout undo deployment/moodle -n $K8S_NAMESPACE || true'
           }
         }
