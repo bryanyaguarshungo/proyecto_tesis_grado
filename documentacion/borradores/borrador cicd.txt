@@ -1,0 +1,22 @@
+flowchart TB
+ subgraph K3s["k3s cluster"]
+        moodle["Moodle Pod"]
+        course["Course-MS Pod"]
+        grade["Grade-MS Pod"]
+        mariadb[("MariaDB Pod")]
+        moPVC[("PVC moodle-data")]
+        dbPVC[("PVC mariadb-data")]
+  end
+ subgraph VM["VM: k3s + Jenkins (Docker)"]
+        K3s
+        jenkins["moodle-ci Pod<br>(Jenkins)"]
+  end
+    moodle -- mount --> moPVC
+    mariadb -- mount --> dbPVC
+    ingress["Traefik Ingress<br>moodle.espe.edu.ec<br>TLS: moodle-tls"] -- 30080 / 30443 HTTPS --> moodle
+    course -- REST --> mariadb
+    grade -- REST --> mariadb
+    jenkins -- CI/CD<br>kubectl set image --> course & grade
+
+
+

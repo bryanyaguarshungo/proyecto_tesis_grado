@@ -1,0 +1,66 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" version="26.0.11">
+  <diagram name="Página-1" id="LUCbcFjUwjZ-sxnj-NGL">
+    <mxGraphModel dx="1936" dy="1983" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="9iwMWiySrx_zggXtcmlK-1" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="-10" width="380" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-2" value="&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: light-dark(rgb(249, 249, 251), rgb(23, 23, 25)); font-family: &amp;quot;Recursive Variable&amp;quot;, arial, sans-serif; font-size: 14px; text-wrap-mode: nowrap; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;k3s cluster&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;align=left;" vertex="1" parent="9iwMWiySrx_zggXtcmlK-1">
+          <mxGeometry x="10" y="160" width="350" height="350" as="geometry" />
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-7" value="&lt;span style=&quot;color: rgb(40, 37, 61); font-family: &amp;quot;Recursive Variable&amp;quot;, arial, sans-serif; font-size: 14px; text-wrap-mode: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;MariaDB Pod&lt;/span&gt;" style="shape=datastore;whiteSpace=wrap;html=1;" vertex="1" parent="9iwMWiySrx_zggXtcmlK-1">
+          <mxGeometry x="160" y="255" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-6" value="&lt;span style=&quot;color: rgb(40, 37, 61); font-family: &amp;quot;Recursive Variable&amp;quot;, arial, sans-serif; font-size: 14px; text-wrap-mode: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;PVC mariadb-data&lt;/span&gt;" style="shape=datastore;whiteSpace=wrap;html=1;" vertex="1" parent="9iwMWiySrx_zggXtcmlK-1">
+          <mxGeometry x="160" y="400" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-9" value="&lt;span style=&quot;color: rgb(40, 37, 61); font-family: &amp;quot;Recursive Variable&amp;quot;, arial, sans-serif; font-size: 14px; text-wrap-mode: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;Course-MS Pod&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="9iwMWiySrx_zggXtcmlK-1">
+          <mxGeometry x="50" y="190" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-3" value="&lt;span style=&quot;color: rgb(40, 37, 61); font-family: &amp;quot;Recursive Variable&amp;quot;, arial, sans-serif; font-size: 14px; text-wrap-mode: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;Grade-MS Pod&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="9iwMWiySrx_zggXtcmlK-1">
+          <mxGeometry x="250" y="190" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-5" value="&lt;span style=&quot;color: rgb(40, 37, 61); font-family: &amp;quot;Recursive Variable&amp;quot;, arial, sans-serif; font-size: 14px; text-wrap-mode: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;moodle-ci Pod&lt;/span&gt;&lt;br style=&quot;--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ; box-sizing: border-box; border-width: 0px; border-style: solid; border-color: rgb(229, 231, 235); color: rgb(40, 37, 61); font-family: &amp;quot;Recursive Variable&amp;quot;, arial, sans-serif; font-size: 14px; text-wrap-mode: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;&lt;span style=&quot;color: rgb(40, 37, 61); font-family: &amp;quot;Recursive Variable&amp;quot;, arial, sans-serif; font-size: 14px; text-wrap-mode: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;(Jenkins)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="9iwMWiySrx_zggXtcmlK-1">
+          <mxGeometry x="125" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-12" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="9iwMWiySrx_zggXtcmlK-1" source="9iwMWiySrx_zggXtcmlK-5" target="9iwMWiySrx_zggXtcmlK-9">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="70" y="-20" as="sourcePoint" />
+            <mxPoint x="120" y="-70" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-17" value="Text" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="9iwMWiySrx_zggXtcmlK-12">
+          <mxGeometry x="-0.4467" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-13" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.84;exitY=1.063;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="9iwMWiySrx_zggXtcmlK-1" source="9iwMWiySrx_zggXtcmlK-5" target="9iwMWiySrx_zggXtcmlK-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="-10" as="sourcePoint" />
+            <mxPoint x="210" y="-60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-14" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.419;exitY=0.974;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.03;entryY=0.149;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="9iwMWiySrx_zggXtcmlK-1" source="9iwMWiySrx_zggXtcmlK-9" target="9iwMWiySrx_zggXtcmlK-7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="260" y="-20" as="sourcePoint" />
+            <mxPoint x="310" y="-70" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-15" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="9iwMWiySrx_zggXtcmlK-1" source="9iwMWiySrx_zggXtcmlK-3" target="9iwMWiySrx_zggXtcmlK-7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="380" y="-10" as="sourcePoint" />
+            <mxPoint x="430" y="-60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iwMWiySrx_zggXtcmlK-16" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="9iwMWiySrx_zggXtcmlK-1" source="9iwMWiySrx_zggXtcmlK-7" target="9iwMWiySrx_zggXtcmlK-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="510" y="280" as="sourcePoint" />
+            <mxPoint x="560" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

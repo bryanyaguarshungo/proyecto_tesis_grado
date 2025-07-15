@@ -1,0 +1,31 @@
+# Navegando a la carpeta de Frappe Bench
+cd ~/frappe-bench
+
+# Ver el contenido de la carpeta
+ls
+# Salir a la carpeta de sitios
+cd sites/
+
+# Ver el contenido de la carpeta sites
+ls
+
+# Ver el contenido del archivo common_site_config.json (configuración de sitios)
+cat common_site_config.json
+
+# Crear un nuevo sitio
+bench new-site site2.com
+
+# Ver el contenido de la carpeta nuevamente
+ls
+
+# Verificar la lista de aplicaciones instaladas en la carpeta de Frappe Bench
+bench list-apps
+
+# Crear una nueva aplicación llamada 'mi_app'
+bench new-app mi_app
+
+# Instalar la aplicación en el sitio test.site
+bench --site test.site install-app mi_app
+
+# Verificar las aplicaciones instaladas en test.site
+bench --site test.site list-apps
